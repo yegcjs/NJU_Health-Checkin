@@ -1,0 +1,9 @@
+{
+    "student_id": "",
+    "password": "",
+    "location": "default",
+    "body_temp_ok": "1",
+    "health_status": "1", 
+    "my_health_code_color": "1" ,
+    "fam_mem_health_code_color" : "1"
+}
