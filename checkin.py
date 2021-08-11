@@ -24,7 +24,7 @@ def encrypt(password, encrypt_salt):
 
 def login(session, username, password):
     r = session.get(urls['login'])
-    soup = BeautifulSoup(r.text, 'lxml')
+    soup = BeautifulSoup(r.text, 'html.parser')
     input_boxes = soup.find_all('input')
     
     input_info = {}
