@@ -6,7 +6,7 @@ import requests
 import execjs
 from bs4 import BeautifulSoup
 from collections import namedtuple
-import schedule
+import datetime
 
 encrypt_js_script = "encrypt.js"
 agent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Mobile Safari/537.36"
@@ -84,11 +84,13 @@ def checkin(session, checkin_info):
     r = session.get(checkin_url)
     result = json.loads(r.text)
 
-    t = time.localtime(time.time())
+    cur_time = datetime.datetime.now()
     if result['code'] == '0' and result['msg'] == '成功':
-        print(f"打卡成功, {t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}:{t.tm_min}:{t.tm_sec}")
+        print(f"打卡成功, {cur_time}")
+        return True 
     else: 
-        print(f"打卡失败, {t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}:{t.tm_min}:{t.tm_sec}")
+        print(f"打卡失败, {cur_time}")
+        return False
 
 
 
@@ -114,17 +116,19 @@ def main():
             info['my_health_code_color'],   # 本人苏康码颜色
             info['fam_mem_health_code_color']   # 家人苏康码颜色
         )
-        checkin(session, health_status)
+        return checkin(session, health_status)
     except:
         assert 0, "You are not providing enough infomation to check in. Check config.json"
     
-    return True
-
 
 if __name__ == '__main__':
-    main()
-    # keep check in every day
-    schedule.every().day.at("00:01").do(main)
     while True:
-        schedule.run_pending()
-        time.sleep(3600)
+        result = main()
+        if result:
+            cur_time = datetime.datetime.now()
+            nxt_checkin_time = cur_time + datetime.timedelta(days=1)
+            nxt_checkin_time = nxt_checkin_time.replace(hour=0, minute=30, second=0)
+            time.sleep((nxt_checkin_time-cur_time).seconds)
+        else: 
+            print("Try 30 min later...")
+            time.sleep(1800)    # try 30 minutes later
