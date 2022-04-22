@@ -1,3 +1,7 @@
-PyExecJS==1.5.1
-requests==2.24.0
-beautifulsoup4==4.9.3
+PyExecJS
+requests
+beautifulsoup4
+onnxruntime
+pillow
+numpy
+opencv-python
