@@ -2,9 +2,12 @@
 
 **使用方法**
 
-1. 在config.json中填写南大统一身份认证的学号和密码
+1. 在config.json中填写南大统一身份认证的学号和密码以及上次核酸时间
 2. 确保依赖库安装完整，`pip install -r requirements.txt`
-3. `python checkin.py`后台运行即可
+3. `python checkin.py`后台运行即可运行一次
+4. 若要每天自动运行，请在`contab -e`中添加以下命令：
+	`0 12 * * * cd /path/to/checkin && python checkin.py`
+5. 或自行查找如何Windows下的定时任务
 
 运行后立即完成一次打卡，此后每天00:35分自动打卡
 
@@ -12,4 +15,5 @@
 
 ### 参考&感谢
 
-[yp51md/NJUcheckin](https://github.com/yp51md/NJUcheckin)
+[yp51md/NJUcheckin](https://github.com/yp51md/NJUcheckin)  
+[Boris-code/feapder](https://github.com/Boris-code/feapder)
