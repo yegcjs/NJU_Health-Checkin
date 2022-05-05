@@ -7,9 +7,7 @@
 3. `python checkin.py`后台运行即可运行一次
 4. 若要每天自动运行，请在`contab -e`中添加以下命令：
 	`0 12 * * * cd /path/to/checkin && python checkin.py`
-5. 或自行查找如何Windows下的定时任务
-
-运行后立即完成一次打卡，此后每天00:35分自动打卡
+5. 或自行查找如何设置Windows下的定时任务
 
 :rotating_light:**请务必如实上报健康状况**，如有异地出行、身体状况变动、本人或家人健康码非绿色，请停止使用此脚本。
 
