@@ -8,8 +8,10 @@ from bs4 import BeautifulSoup
 from collections import namedtuple
 import datetime
 import ddddocr
+import mailsend
 
 encrypt_js_script = "encrypt.js"
+configFile = "config.json"
 agent = "Mozilla/5.0 (Linux; Android 12; M2007J1SC Build/SKQ1.220213.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/100.0.4896.127 Mobile Safari/537.36 cpdaily/9.0.15 wisedu/9.0.15"
 urls = {
 	"login": "https://authserver.nju.edu.cn/authserver/login?service=http%3A%2F%2Fehallapp.nju.edu.cn%2Fxgfw%2Fsys%2Fyqfxmrjkdkappnju%2Fapply%2FgetApplyInfoList.do",
@@ -72,7 +74,6 @@ def check_login(session, location):
 		history = json.loads(r.text)
 		assert history['code'] == '0'
 	except:
-		# assert 0, "Fail to login"
 		return None, location, False
 
 	print("Log in Successfully")
@@ -95,18 +96,18 @@ def checkin(session, checkin_info):
 	r = session.get(checkin_url)
 	result = json.loads(r.text)
 
-	cur_time = datetime.datetime.now()
+	cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	if result['code'] == '0' and result['msg'] == '成功':
-		print(f"successfully, {cur_time}")
+		print("successfully, " + cur_time)
 		return True 
 	else: 
-		print(f"failed, {cur_time}")
+		print("failed, " + cur_time)
 		return False
 
 
 
 def main():
-	with open("config.json", "r", encoding='utf-8') as f:
+	with open(configFile, "r", encoding='utf-8') as f:
 		info = json.load(f)
 	
 	session = requests.Session()
@@ -117,8 +118,6 @@ def main():
 	session.headers["X-Requested-With"] = "X-Requested-With: com.wisedu.cpdaily.nju"
 	session.headers["Referer"] = "http://ehallapp.nju.edu.cn/xgfw/sys/mrjkdkappnju/index.html"
 
-
-
 	assert 'student_id' in info, "Expected infomation `student_id` not found. Check config.json"
 	assert "password" in info, "Expected infomation `password` not found. Check config.json"
 
@@ -127,21 +126,34 @@ def main():
 	if not status:
 		return False
 	health_status = (
-		wid,                            # WID
-		location,                       # 地点
-		info['body_temp_ok'],           # 体温正常
-		info['health_status'],          # 健康状况
-		info['my_health_code_color'],   # 本人苏康码颜色
+		wid,                                 # WID
+		location,                            # 地点
+		info['body_temp_ok'],                # 体温正常
+		info['health_status'],               # 健康状况
+		info['my_health_code_color'],        # 本人苏康码颜色
 		info['fam_mem_health_code_color'],   # 家人苏康码颜色
-		info['leave_Nanjing'],			# 14天是否离宁
-		info['last_RNA']				# 上次核酸时间
+		info['leave_Nanjing'],               # 14天是否离宁
+		info['last_RNA']                     # 上次核酸时间
 	)
 	return checkin(session, health_status)
 	
 
 if __name__ == '__main__':
 	result = main()
-	# print(result)
-	while(not result):
-		time.sleep(60)
-		result = main()
+	if not result:
+		with open(configFile, "r", encoding='utf-8') as f:
+			info = json.load(f)
+		if 'try_N_times' in info:
+			try_N_times = int(info['try_N_times'])
+		else:
+			try_N_times = 10
+		N = try_N_times
+		while(not result and N > 0):
+			time.sleep(120)
+			result = main()
+			N -= 1
+		if not result:
+			cur_time = datetime.datetime.now().strftime("%Y年%m月%d日 %H点%M分%S秒")
+			print("failed after try " + str(try_N_times) + " times, " + cur_time)
+			mail = mailsend.mailSend("myconfig.json", "打卡失败提醒", "打卡失败，请自行打卡或检测配置文件，" + cur_time)
+			mail.sendMsg()
