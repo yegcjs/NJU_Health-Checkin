@@ -70,13 +70,15 @@ def login(session, username, password):
 
 def check_login(session, location):
 	r = session.get(urls['health_history'])
+	cur_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	try:
 		history = json.loads(r.text)
 		assert history['code'] == '0'
 	except:
+		print("login failed, " + cur_time)
 		return None, location, False
 
-	print("Log in Successfully")
+	print("login Successfully, " + cur_time)
 	wid = history['data'][0]['WID']
 	if location == 'default':
 		location = history['data'][1]['CURR_LOCATION']
