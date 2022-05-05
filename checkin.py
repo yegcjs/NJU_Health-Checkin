@@ -157,5 +157,5 @@ if __name__ == '__main__':
 		if not result:
 			cur_time = datetime.datetime.now().strftime("%Y年%m月%d日 %H点%M分%S秒")
 			print("failed after try " + str(try_N_times) + " times, " + cur_time)
-			mail = mailsend.mailSend("myconfig.json", "打卡失败提醒", "打卡失败，请自行打卡或检测配置文件，" + cur_time)
+			mail = mailsend.mailSend(configFile, "打卡失败提醒", "打卡失败，请自行打卡或检测配置文件，" + cur_time)
 			mail.sendMsg()
