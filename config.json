@@ -7,5 +7,6 @@
     "my_health_code_color": "1" ,
     "fam_mem_health_code_color" : "1" ,
     "leave_Nanjing" : "0",
-    "last_RNA" : "2022-0X-XX+XX",           "@last_RNA": "上次核酸，格式为YYYY-MM-DD+HH"
+    "last_RNA" : "2022-0X-XX+XX",           "@last_RNA": "上次核酸，格式为YYYY-MM-DD+HH",
+    "try_N_times" : "3",                    "@try_N_times": "打卡失败的话尝试次数"
 }
